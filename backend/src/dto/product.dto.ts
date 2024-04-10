@@ -23,4 +23,7 @@ export class ProductDto {
 
   @IsString()
   notes?: string;
+
+  @IsString()
+  imageUrl?: string;
 }

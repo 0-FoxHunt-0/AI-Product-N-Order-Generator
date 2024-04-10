@@ -27,6 +27,7 @@ export class ProductService {
           price: dto.price,
           providerPrice: dto.providerPrice,
           notes: dto?.notes,
+          imageUrl: dto?.imageUrl,
         },
       });
 

@@ -20,6 +20,7 @@ model Product {
   price         Float
   providerPrice Float
   brand         String
+  imageUrl      String?
   notes         String?
   deleted       Boolean @default(false)
 
@@ -45,6 +46,7 @@ model Tag {
 
 model Order {
   SKU       String   @id @default(uuid())
+  imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

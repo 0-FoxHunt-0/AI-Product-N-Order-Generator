@@ -61,9 +61,15 @@ export class OrderService {
         }),
       );
 
+      // Find first imageUrl
+      const productWithImageUrl: Product | undefined = products.find(
+        (product) => Boolean(product.imageUrl),
+      );
+
       // Create a new order
       const order = await this.prisma.order.create({
         data: {
+          imageUrl: productWithImageUrl?.imageUrl,
           products: {
             connect: products.map((product) => ({ SKU: product.SKU })),
           },
