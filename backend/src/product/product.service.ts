@@ -12,9 +12,22 @@ export class ProductService {
       where: {
         deleted: false,
       },
+      include: {
+        tags: true,
+      },
     });
 
     return products;
+  }
+
+  async getAllDeleted() {
+    const deletedProducts = await this.prisma.product.findMany({
+      where: {
+        deleted: true,
+      },
+    });
+
+    return deletedProducts;
   }
 
   async addProduct(dto: ProductDto) {
@@ -56,8 +69,9 @@ export class ProductService {
           },
         });
 
-        await this.prisma.product.create({
+        const deletedProduct = await this.prisma.product.create({
           data: {
+            SKU: existingProduct.SKU,
             name: existingProduct.name,
             price: existingProduct.price,
             providerPrice: existingProduct.providerPrice,
@@ -68,6 +82,7 @@ export class ProductService {
             createdAt: existingProduct.createdAt,
           },
         });
+        return deletedProduct;
       }
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -95,6 +110,9 @@ export class ProductService {
           price: dto.price,
           notes: dto?.notes,
           providerPrice: dto.providerPrice,
+        },
+        include: {
+          tags: true,
         },
       });
 

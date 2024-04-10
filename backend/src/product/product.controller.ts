@@ -22,13 +22,18 @@ export class ProductController {
     return this.productService.getAll();
   }
 
+  @Get('deleted-products')
+  getAllDeleted() {
+    return this.productService.getAllDeleted();
+  }
+
   @Post('/add-product')
   addProduct(@Body() dto: ProductDto) {
     return this.productService.addProduct(dto);
   }
 
   @Delete(':sku')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.ACCEPTED)
   deleteProduct(@Param('sku') sku: string) {
     return this.productService.deleteProduct(sku);
   }

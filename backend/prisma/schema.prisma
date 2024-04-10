@@ -28,7 +28,7 @@ model Product {
   updatedAt DateTime @updatedAt
 
   tags   Tag[]
-  orders Order[]
+  orders OrderProduct[]
 
   @@unique([name, brand])
 }
@@ -37,7 +37,7 @@ model Tag {
   SKU        String  @id @default(uuid())
   color      String
   message    String
-  Product    Product @relation(fields: [productSKU], references: [SKU])
+  Product    Product @relation(fields: [productSKU], references: [SKU], onDelete: Cascade)
   productSKU String
 
   createdAt DateTime @default(now())
@@ -50,5 +50,14 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products Product[]
+  products OrderProduct[]
+}
+
+model OrderProduct {
+  orderId   String
+  productId String
+  order     Order   @relation(fields: [orderId], references: [SKU], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [SKU], onDelete: Cascade)
+
+  @@id([orderId, productId])
 }
