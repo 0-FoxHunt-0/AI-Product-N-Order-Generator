@@ -53,13 +53,12 @@
         >Generate Products With AI</el-button
       >
     </div>
-
     <ProductTable />
   </div>
 </template>
 
 <script lang="ts">
-import ProductTable from "../components/Products/ProductTable.vue";
+import ProductTable from "@/components/Products/ProductTable.vue";
 
 import { ElMessage } from "element-plus";
 

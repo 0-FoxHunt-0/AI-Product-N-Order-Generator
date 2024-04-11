@@ -9,9 +9,10 @@ export class OrderService {
   constructor(private prisma: PrismaService) {}
 
   async getAllOrders() {
-    const orders = await this.prisma.order.findMany({
-      include: {
-        products: true,
+    const orders = await this.prisma.orderProduct.findMany({
+      select: {
+        order: true,
+        product: true,
       },
     });
 
