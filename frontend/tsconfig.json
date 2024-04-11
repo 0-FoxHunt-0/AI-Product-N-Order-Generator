@@ -13,6 +13,7 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "strictNullChecks": false,
     "types": [
       "webpack-env"
     ],
@@ -37,5 +38,5 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
 }

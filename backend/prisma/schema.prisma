@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Product {
-  SKU           String  @id @default(uuid())
+  SKU           String  @id @default(cuid())
   name          String
   count         Int
   price         Float
@@ -34,7 +34,7 @@ model Product {
 }
 
 model Tag {
-  SKU        String  @id @default(uuid())
+  SKU        String  @id @default(cuid())
   color      String
   message    String
   Product    Product @relation(fields: [productSKU], references: [SKU], onDelete: Cascade)
@@ -45,7 +45,7 @@ model Tag {
 }
 
 model Order {
-  SKU       String   @id @default(uuid())
+  SKU       String   @id @default(cuid())
   imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

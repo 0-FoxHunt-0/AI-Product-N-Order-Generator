@@ -6,7 +6,14 @@ import aspectRatio from "@tailwindcss/aspect-ratio";
 export default {
   content: ["./public/index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "blue-main": "#2D72E8",
+        "blue-secondary": "#254582",
+        "buttons-secondary": "#6668A01A",
+        "nav-bg": "#f7f9fb",
+      },
+    },
   },
   plugins: [typography, forms, aspectRatio],
 };

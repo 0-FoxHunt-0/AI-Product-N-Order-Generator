@@ -1,4 +1,5 @@
 module.exports = {
+  // parser: "@typescript-eslint/parser",
   root: true,
   env: {
     node: true,
@@ -16,11 +17,9 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "vue/no-multiple-template-root": "off",
-    // "prettier/prettier": [
-    //   "error",
-    //   {
-    //     endOfLine: "auto",
-    //   },
-    // ],
   },
+  // extends: [
+  //   "plugin:@typescript-eslint/recommended",
+  //   "plugin:vue/vue3-essential",
+  // ],
 };
