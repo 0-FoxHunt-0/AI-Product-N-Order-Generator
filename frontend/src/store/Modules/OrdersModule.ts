@@ -1,57 +1,62 @@
 import OrderModel from "@/Models/OrderModel";
 import orderService from "@/Services/OrderService";
-import { GetterTree, MutationTree, ActionTree } from "vuex";
-import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
-import store from "..";
+import { GetterTree, MutationTree, ActionTree, Module } from "vuex";
 
-@Module({ name: "ProductModule", dynamic: true, store })
-export default class OrderModule extends VuexModule {
-  orders: OrderModel[] = [];
-
-  get totalOrderCount(): number {
-    return this.orders.length;
-  }
-
-  @Mutation
-  GET_ORDERS(orders: OrderModel[]) {
-    this.orders = orders;
-  }
-
-  @Mutation
-  ADD_ORDER(order: OrderModel) {
-    this.orders.push(order);
-  }
-
-  @Mutation
-  DELETE_ORDER(orderSKU: string) {
-    this.orders = this.orders.filter((order) => order.SKU !== orderSKU);
-  }
-
-  @Mutation
-  SET_ORDERS(orders: OrderModel[]) {
-    this.orders = orders;
-  }
-
-  @Action
-  async fetchOrders() {
-    const orders = await orderService.getAllOrders();
-    this.SET_ORDERS(orders);
-  }
-
-  @Action
-  async getAllOrders() {
-    if (this.orders.length === 0) this.fetchOrders();
-  }
-
-  @Action
-  async addOrder(productSKUs: string[]) {
-    const addedOrder = await orderService.addOrder(productSKUs);
-    this.ADD_ORDER(addedOrder);
-  }
-
-  @Action
-  async deleteOrder(orderSKU: string) {
-    await orderService.deleteOrder(orderSKU);
-    this.DELETE_ORDER(orderSKU);
-  }
+// Define the RootState interface
+interface RootState {
+  orders: OrderModel[];
 }
+
+const state: RootState = {
+  orders: [],
+};
+
+const getters: GetterTree<RootState, RootState> = {
+  totalOrderCount(state): number {
+    return state.orders.length;
+  },
+};
+
+const mutations: MutationTree<RootState> = {
+  setOrders(state, orders: OrderModel[]) {
+    state.orders = orders;
+  },
+
+  addOrder(state, order: OrderModel) {
+    state.orders.push(order);
+  },
+
+  deleteOrder(state, orderSKU: string) {
+    state.orders = state.orders.filter((order) => order.SKU !== orderSKU);
+  },
+};
+
+const actions: ActionTree<RootState, RootState> = {
+  async fetchOrders({ commit }) {
+    const orders = await orderService.getAllOrders();
+    commit("setOrders", orders);
+  },
+
+  async getAllOrders({ state, dispatch }) {
+    if (state.orders.length === 0) await dispatch("fetchOrders");
+  },
+
+  async addOrder({ commit }, productSKUs: string[]) {
+    const addedOrder = await orderService.addOrder(productSKUs);
+    commit("addOrder", addedOrder);
+  },
+
+  async deleteOrder({ commit }, orderSKU: string) {
+    await orderService.deleteOrder(orderSKU);
+    commit("deleteOrder", orderSKU);
+  },
+};
+
+const ordersModule: Module<RootState, RootState> = {
+  state,
+  mutations,
+  actions,
+  getters,
+};
+
+export default ordersModule;

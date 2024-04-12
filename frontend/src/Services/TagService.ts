@@ -1,7 +1,7 @@
 import TagModel from "@/Models/TagModel";
 import axios from "axios";
 
-const API_URL = "http://localhost:3333/";
+const API_URL = "http://localhost:3333";
 
 class TagService {
   async getAllTagsForProduct(sku: string): Promise<TagModel[]> {

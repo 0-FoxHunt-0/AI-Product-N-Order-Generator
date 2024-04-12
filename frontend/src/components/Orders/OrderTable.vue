@@ -1,7 +1,7 @@
 <template>
   <el-table
     ref="multipleTableRef"
-    :data="products"
+    :data="orders"
     @selection-change="handleSelectionChange"
     max-height="470"
     style="width: 100% !important"
@@ -35,65 +35,31 @@
           </el-avatar>
           <div>
             <p>
-              {{ scope.row.name }}
+              {{ scope.row.order.SKU }}
             </p>
-            <p>
-              {{ scope.row.SKU }}
-            </p>
-            <!-- <p>
-              {{ scope.row.imageUrl }}
-            </p> -->
           </div>
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="count" label="Count" width="100" />
-    <el-table-column prop="price" label="Price" width="100" />
-    <el-table-column prop="providerPrice" label="Supplier Price" width="120" />
-    <el-table-column prop="brand" label="Brand" width="150" />
-    <el-table-column prop="notes" label="Notes" width="200" />
-    <el-table-column
-      prop="tags"
-      label="Tags"
-      width="150"
-      filter-placement="bottom-end"
-    >
-      <template #default="scope">
-        <div class="flex gap-2">
-          <el-tag
-            v-for="tag in scope.row.tags"
-            :key="tag.SKU"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)"
-          >
-            {{ tag.message }}
-          </el-tag>
-          <el-input
-            v-if="inputVisible"
-            ref="InputRef"
-            v-model="inputValue"
-            class="w-20"
-            size="small"
-            @keyup.enter="handleInputConfirm"
-            @blur="handleInputConfirm"
-          />
-          <el-button
-            v-else
-            class="button-new-tag"
-            size="small"
-            @click="showInput"
-          >
-            + New Tag
-          </el-button>
-        </div>
-      </template>
-    </el-table-column>
+    <el-table-column width="500"></el-table-column>
+    <template #header>
+      <el-input v-model="search" size="small" placeholder="Type to search" />
+    </template>
     <el-table-column fixed="right" align="right" width="200">
-      <template #header>
-        <el-input v-model="search" size="small" placeholder="Type to search" />
-      </template>
       <template #default="scope">
+        <el-button text @click="table = true">Open Products Table</el-button>
+        <el-drawer
+          v-model="table"
+          title="I have a nested table inside!"
+          direction="rtl"
+          size="50%"
+        >
+          <el-table :data="gridData">
+            <el-table-column property="date" label="Date" width="150" />
+            <el-table-column property="name" label="Name" width="200" />
+            <el-table-column property="address" label="Address" />
+          </el-table>
+        </el-drawer>
         <el-button size="small" @click="handleEdit(scope.$index)"
           >Edit</el-button
         >
@@ -107,51 +73,35 @@
     </el-table-column>
   </el-table>
   <el-footer>
-    <span>Count display</span>
+    <span>I am a footer</span>
   </el-footer>
 </template>
 
 <script lang="ts" setup>
-import { ElInput, ElTable } from "element-plus";
-import { computed, nextTick, ref } from "vue";
+import { ElTable } from "element-plus";
+import { ref } from "vue";
 import ProductModel from "../../Models/ProductModel";
-import productService from "../../Services/ProductService";
+import orderService from "../../Services/OrderService";
 
 // Data
-const products = ref();
+const orders = ref();
 async function load() {
-  products.value = await productService.getAllProducts();
-
+  orders.value = await orderService.getAllOrders();
+  console.log(orders.value);
   // const productsModule = getModule(ProductModule);
   // products.value = productsModule.getAllProducts;
 }
 
 load();
 
-// Tags
-const inputValue = ref("");
-const dynamicTags = ref(["Tag 1", "Tag 2", "Tag 3"]);
-const inputVisible = ref(false);
-const InputRef = ref<InstanceType<typeof ElInput>>();
-
-const handleClose = (tag: string) => {
-  dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
-};
-
-const showInput = () => {
-  inputVisible.value = true;
-  nextTick(() => {
-    InputRef.value!.input!.focus();
-  });
-};
-
-const handleInputConfirm = () => {
-  if (inputValue.value) {
-    dynamicTags.value.push(inputValue.value);
-  }
-  inputVisible.value = false;
-  inputValue.value = "";
-};
+const table = ref(false);
+const gridData = ref();
+async function loadProducts(orderSKU: string) {
+  orders.value = await orderService.getAllProductsForOrder(orderSKU);
+  console.log(orders.value);
+  // const productsModule = getModule(ProductModule);
+  // products.value = productsModule.getAllProducts;
+}
 
 // Table Actions
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
@@ -182,8 +132,8 @@ const handleEdit = (product: ProductModel) => {
 
 const search = ref("");
 // const filterTableData = computed(() =>
-//   products.value.filter(
-//     (data): any =>
+//   products.filter(
+//     (data) =>
 //       !search.value ||
 //       data.SKU.toLowerCase().includes(search.value.toLowerCase())
 //   )
@@ -191,8 +141,3 @@ const search = ref("");
 
 // const products: ProductModel[] = productService.getAllProducts();
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
-
-<!-- @click.prevent="deleteRow(scope.$index)" -->

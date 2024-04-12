@@ -24,7 +24,6 @@ export class OrderService {
       const order = this.prisma.orderProduct.findMany({
         where: { orderId: orderSKU },
         select: {
-          orderId: true,
           product: true,
         },
       });

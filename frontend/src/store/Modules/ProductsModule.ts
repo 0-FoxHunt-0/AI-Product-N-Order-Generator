@@ -9,6 +9,10 @@ import store from "..";
 export default class ProductModule extends VuexModule {
   products: ProductModel[] = [];
 
+  get returnProducts(): ProductModel[] {
+    return this.products;
+  }
+
   get totalProductsCount(): number {
     return this.products.length;
   }
@@ -51,13 +55,15 @@ export default class ProductModule extends VuexModule {
 
   @Action
   async fetchProducts() {
-    const products = await productService.getAllProducts();
+    const products: ProductModel[] = await productService.getAllProducts();
     this.SET_PRODUCTS(products);
   }
 
   @Action
   async getAllProducts() {
     if (this.products.length === 0) await this.fetchProducts();
+    this.returnProducts;
+    // return this.products;
   }
 
   @Action
