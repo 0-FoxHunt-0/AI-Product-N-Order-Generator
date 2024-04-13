@@ -1,11 +1,22 @@
 import axios from "axios";
+import dotenv from "dotenv";
+import OpenAI from "openai";
 
-class GPTService {
-  async getProducts(productNum: number) {
-    // Define your query
+dotenv.config();
+class AiService {
+  async getProducts(productNum = 1, subject?: string) {
+    const openai = new OpenAI();
+    const GPT_TOKEN = process.env.GPT_API_KEY;
+    const UNSPLASH_API_KEY = process.env.UNSPLASH_API_KEY;
+
+    subject = subject || "random";
+
     const query = `
         I want you to respond to me like you are an API.
-        I want you to return to me a response with only values of fictional products and no explanatory response (only the json object), only the requested values in the following format, I want you to generate NEW fictional values:
+        I want you to return to me a response with only values of ${productNum} fictional products with the subject: "${subject}", 
+        do not provide any explanatory text (only the json object), 
+        only the requested values in the following format, 
+        I want you to generate NEW fictional YET REALISTIC values and place them all in a "results" array in the JSON you provide, I want the response in JSON:
         {
             "name": "test4",
             "count": 2,
@@ -23,34 +34,26 @@ class GPTService {
         }
         `;
 
-    // Define your request parameters
-    const params = {
-      model: "text-davinci-003", // This is the GPT-3.5 model you want to use
-      prompt: query,
-      max_tokens: 50, // Adjust this according to your desired response length
-      temperature: 0.7, // Adjust this for more or less creative responses
-    };
+    const completion = await openai.chat.completions.create({
+      messages: [{ role: "system", content: query }],
+      model: "gpt-3.5-turbo",
+    });
 
-    axios
-      .post(
-        "https://api.openai.com/v1/engines/text-davinci-003/completions",
-        params,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer YOUR_API_KEY_HERE", // Replace with your actual API key
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data.choices[0].text.trim());
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    const gptResult = completion.choices[0];
+
+    const imageQuery = "Nature";
+
+    const imageUrl = await axios.get(
+      `https://api.unsplash.com/search/photos?page=1&query=${imageQuery}&per_page=1`,
+      {
+        headers: {
+          Authorization: "Client-ID " + UNSPLASH_API_KEY,
+        },
+      }
+    );
   }
 }
 
-const gptService = new GPTService();
+const aiService = new AiService();
 
-export default gptService;
+export default aiService;
